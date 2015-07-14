@@ -1,8 +1,7 @@
 clc;
-clear;
+clear all;
 close all;
 
-debug_mode = true;
 
 %%%%% video process%%%%%%%%%%%
 % info=aviinfo('test.avi');
@@ -41,11 +40,10 @@ debug_mode = true;
 
 %%%%%%% picture process%%%%%%%%%%%
 p1 = imread('f1.jpg');
-%p1 = imread('pseudo_f1.jpg');
+p1 = imread('f1.jpg');
 p1 = rgb2gray(p1);
 
 p2 = imread('f2.jpg');
-%p2 = imread('pseudo_f2.jpg');
 p2 = rgb2gray(p2);
 % 
 % p3 = imread('f3.jpg');
@@ -68,15 +66,14 @@ blur_index = 6;
 blur_flag = false;
 
 %% brutal force
-disp('brutal')
-tic
-blur_flag = false;
-[e,f] = BrutalMovDetector(p1,p2,seg_num,blur_flag,blur_index, debug_mode);
-figure(3)
-ImagePlotSuper(p1, p2,seg_num,e,f);
+% disp('brutal')
+% tic
+% %blur_flag = false;
+% [e,f] = BrutalMovDetector(p1,p2,seg_num,blur_flag,blur_index);
+% figure(3)
+% ImagePlot(p1,seg_num,e,f);
 
 
-%{
 pixel(:,:,1) = p1;
 pixel(:,:,2) = p2;
 energy = [];
@@ -210,6 +207,5 @@ mean(angle_hexsa)
 % length(find(cor2>0))/length(cor2)
 % mean(abs(cor1))
 % mean(abs(cor2))
-%}
 
 
