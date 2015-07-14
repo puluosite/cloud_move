@@ -1,7 +1,8 @@
 clc;
-clear all;
+clear;
 close all;
 
+debug_mode = true;
 
 %%%%% video process%%%%%%%%%%%
 % info=aviinfo('test.avi');
@@ -39,26 +40,37 @@ close all;
 
 
 %%%%%%% picture process%%%%%%%%%%%
-p1 = imread('f1.jpg');
-p1 = imread('f1.jpg');
+%p1 = imread('f1.jpg');
+p1 = imread('pseudo_f1.jpg');
 p1 = rgb2gray(p1);
 
-p2 = imread('f2.jpg');
+%p2 = imread('f2.jpg');
+p2 = imread('pseudo_f2.jpg');
 p2 = rgb2gray(p2);
 % 
 % p3 = imread('f3.jpg');
 % p3 = rgb2gray(p3);
 % 
 
-figure(1)
+subplot(3,1,1);
 v1 = zeros(10,16);
 v2 = zeros(10,16);
 ImagePlot(p1,40,v1,v2);
 
-figure(2)
+subplot(3,1,2);
 v1 = zeros(10,16);
 v2 = zeros(10,16);
 ImagePlot(p2,40,v1,v2);
+
+subplot(3,1,3);
+ImagePlotSuper(p1, p2,40,v1,v2);
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%% find the center of two balls %%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+
 
 
 seg_num = 40;
@@ -66,14 +78,15 @@ blur_index = 6;
 blur_flag = false;
 
 %% brutal force
-% disp('brutal')
-% tic
-% %blur_flag = false;
-% [e,f] = BrutalMovDetector(p1,p2,seg_num,blur_flag,blur_index);
-% figure(3)
-% ImagePlot(p1,seg_num,e,f);
+disp('brutal')
+tic
+blur_flag = false;
+[e,f] = BrutalMovDetector(p1,p2,seg_num,blur_flag,blur_index, debug_mode);
+figure(3)
+ImagePlotSuper(p1, p2,seg_num,e,f);
 
 
+%{
 pixel(:,:,1) = p1;
 pixel(:,:,2) = p2;
 energy = [];
@@ -207,5 +220,6 @@ mean(angle_hexsa)
 % length(find(cor2>0))/length(cor2)
 % mean(abs(cor1))
 % mean(abs(cor2))
+%}
 
 

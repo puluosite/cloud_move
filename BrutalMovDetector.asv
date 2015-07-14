@@ -1,4 +1,4 @@
-function [ res_r, res_c ] = BrutalMovDetector( pixel1, pixel2, seg_num, BlurFlag, blur_index)
+function [ res_r, res_c ] = BrutalMovDetector( pixel1, pixel2, seg_num, BlurFlag, blur_index, debug_mode)
 %BRUTALMOVDETECTOR Summary of this function goes here
 %   Detailed explanation goes here
 
@@ -24,8 +24,12 @@ function [ res_r, res_c ] = BrutalMovDetector( pixel1, pixel2, seg_num, BlurFlag
     
     %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
     %%%%% segment the two images: code style %%%%%%%%%
-    %%%%%%%%%% 1,   2, ... cols %%%%%%%%%%%%%%%%%%%%%%%%
-    %%%%%%%%%% c+1, c+2,...,
+    %%%%%%%%%% 1,   2, ...  cols    %%%%%%%%%%%%%%%%%%
+    %%%%%%%%%% c+1, c+2,...,2c      %%%%%%%%%%%%%%%%%%
+    %%%%%%%%%% .................    %%%%%%%%%%%%%%%%%%
+    %%%%%%%%%% (r-1)*c+1,..,r*c     %%%%%%%%%%%%%%%%%%
+    %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
 
     %seg is the two frames
     %seg(:,:,:,1) is frame1; seg(:,:,:,2) is frame2
@@ -40,6 +44,15 @@ function [ res_r, res_c ] = BrutalMovDetector( pixel1, pixel2, seg_num, BlurFlag
         end   
     end
     
+    msg = sprintf('Finish loading two images, start computing ... \n')';
+    disp(msg);
+    msg = sprintf('Num of rows: %d, num of cols: %d, num of segments: %d\n',rows, cols, rows*cols);
+    disp(msg);
+    
+    %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+    %%%%%%%% search every possible position and find optima %%%%%%
+    %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+    
     for i = 1:rows
         for j = 1:cols
             position.segr = i;
@@ -50,6 +63,7 @@ function [ res_r, res_c ] = BrutalMovDetector( pixel1, pixel2, seg_num, BlurFlag
             
             index = j + (i-1)*cols;
             disp(index);
+            
             
             if(i ~=1 && i~=rows && j ~=1 && j ~= cols)
                 
@@ -79,8 +93,8 @@ function [ res_r, res_c ] = BrutalMovDetector( pixel1, pixel2, seg_num, BlurFlag
                         position.dy = n; % col offset
                         diff = MAD(test_seg, pixel_n, position,num);
                         v(m+numCounter+1,n+numCounter+1) = diff.value;
-                        x(m+numCounter+1,n+numCounter+1) = diff.x;
-                        y(m+numCounter+1,n+numCounter+1) = diff.y;
+                        d_r(m+numCounter+1,n+numCounter+1) = diff.row;
+                        d_c(m+numCounter+1,n+numCounter+1) = diff.col;
                     end
                 end
                 
@@ -93,10 +107,22 @@ function [ res_r, res_c ] = BrutalMovDetector( pixel1, pixel2, seg_num, BlurFlag
 %                     position.dy = n;
 %                     cannot_be_true = MAD(test_seg,pixel_n,position, num);
 %                 end
-                [cx,cy] = find(v == min(min(v)));
+                %[cx,cy] = find(v == min(min(v)));
+                [cx, cy] = findOptPos(v);
+                %surf(v)
 
-                opt_r = x(min(abs(cx)),min(abs(cy)));
-                opt_c = y(min(abs(cx)),min(abs(cy)));
+                opt_r = d_r(min(abs(cx)),min(abs(cy)));
+                opt_c = d_c(min(abs(cx)),min(abs(cy)));
+                
+                if (debug_mode)
+                    %surf(v)
+                    msg = sprintf('Motion vector is: (%d, %d)',opt_r, opt_c);
+                    disp(msg);
+                    test = 1;
+                    org_r = 
+                    plot2Segs(pixel1, )
+                end
+                
             end
             
 %             disp(i)

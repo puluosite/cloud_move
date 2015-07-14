@@ -2,6 +2,10 @@ function [ res_r, res_c ] = BrutalMovDetector( pixel1, pixel2, seg_num, BlurFlag
 %BRUTALMOVDETECTOR Summary of this function goes here
 %   Detailed explanation goes here
 
+    %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+    %%%%%%%% parameters %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+     threshold = 6;
+
     %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
     %%% pre-check two images %%%%%%%%%%%%%%%
     %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -91,7 +95,7 @@ function [ res_r, res_c ] = BrutalMovDetector( pixel1, pixel2, seg_num, BlurFlag
                     for n = -numCounter:numCounter       
                         position.dx = m; % row offset
                         position.dy = n; % col offset
-                        diff = MAD(test_seg, pixel_n, position,num);
+                        diff = MAD(test_seg, pixel_n, position,num, threshold);
                         v(m+numCounter+1,n+numCounter+1) = diff.value;
                         d_r(m+numCounter+1,n+numCounter+1) = diff.row;
                         d_c(m+numCounter+1,n+numCounter+1) = diff.col;
@@ -119,6 +123,11 @@ function [ res_r, res_c ] = BrutalMovDetector( pixel1, pixel2, seg_num, BlurFlag
                     msg = sprintf('Motion vector is: (%d, %d)',opt_r, opt_c);
                     disp(msg);
                     test = 1;
+                    org_r = (i-1)*num + 1;
+                    org_c = (j-1)*num + 1;
+                    next_r = org_r + opt_r;
+                    next_c = org_c + opt_c;
+                    %plot2Segs(pixel1, org_r, org_c, pixel2, next_r, next_c, num);
                 end
                 
             end

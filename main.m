@@ -46,21 +46,33 @@ p1 = rgb2gray(p1);
 
 p2 = imread('f2.jpg');
 %p2 = imread('pseudo_f2.jpg');
+%p2 = imread('pseudo_f2_large_move.jpg');
 p2 = rgb2gray(p2);
 % 
 % p3 = imread('f3.jpg');
 % p3 = rgb2gray(p3);
 % 
 
-figure(1)
+subplot(3,1,1);
 v1 = zeros(10,16);
 v2 = zeros(10,16);
 ImagePlot(p1,40,v1,v2);
 
-figure(2)
+subplot(3,1,2);
 v1 = zeros(10,16);
 v2 = zeros(10,16);
 ImagePlot(p2,40,v1,v2);
+
+subplot(3,1,3);
+ImagePlotSuper(p1, p2,40,v1,v2);
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%% find the center of two balls %%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+[center_r1, center_c1] = findBallCenter(p1);
+[center_r2, center_c2] = findBallCenter(p2);
 
 
 seg_num = 40;
