@@ -69,10 +69,12 @@ ImagePlotSuper(p1, p2,40,v1,v2);
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%%%%% find the center of two balls %%%%%%%%%%%%%%%
+%%%%%% only work for pic that is just a ball %%%%%%
+%%%%%% for debug %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
-[center_r1, center_c1] = findBallCenter(p1);
-[center_r2, center_c2] = findBallCenter(p2);
+% [center_r1, center_c1] = findBallCenter(p1);
+% [center_r2, center_c2] = findBallCenter(p2);
 
 
 seg_num = 40;
@@ -80,15 +82,35 @@ blur_index = 6;
 blur_flag = false;
 
 %% brutal force
+%{
 disp('brutal')
 tic
 blur_flag = false;
-[e,f] = BrutalMovDetector(p1,p2,seg_num,blur_flag,blur_index, debug_mode);
+[gt_r,gt_c] = BrutalMovDetector(p1,p2,seg_num,blur_flag,blur_index, debug_mode);
 figure(3)
-ImagePlotSuper(p1, p2,seg_num,e,f);
+ImagePlotSuper(p1, p2,seg_num,gt_r,gt_c);
+gt_data.gt_r = gt_r;
+gt_data.gt_c = gt_c;
+save('gt_data.mat','gt_data');
+%}
 
-
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% blurring is not good for edges movement detection, the movement vector
+% trends to leanning to the blurring diffusion direction (gradient)
+% Therefore, we might be solve the problem as followings:
+% 1. sharpen or do nothing to the segment that has edges
+% 2. blur segment without/few edges
+% needs to be implemented and verified
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %{
+blur_flag = true;
+[e,f] = BrutalMovDetector(p1,p2,seg_num,blur_flag,blur_index, debug_mode);
+figure(4)
+ImagePlotSuper(p1, p2,seg_num,e,f);
+%}
+
+
+
 pixel(:,:,1) = p1;
 pixel(:,:,2) = p2;
 energy = [];
@@ -124,10 +146,10 @@ end
 
 
 
-gt = load('gt.mat');
-gt_x = gt.e;
-gt_y = gt.f;
-ImagePlot(p1,seg_num,gt_x,gt_y);
+gt = load('gt_data.mat');
+gt_r = gt.gt_data.gt_r;
+gt_c = gt.gt_data.gt_c;
+ImagePlot(p1,seg_num,gt_r,gt_c);
 
 disp('Normal HEXBS')
 [hex_x, hex_y] = HexMovDetector(p1,p2,seg_num,blur_flag,blur_index);
@@ -222,6 +244,6 @@ mean(angle_hexsa)
 % length(find(cor2>0))/length(cor2)
 % mean(abs(cor1))
 % mean(abs(cor2))
-%}
+
 
 

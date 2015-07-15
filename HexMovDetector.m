@@ -3,7 +3,14 @@ function [res_r,res_c] = HexMovDetector( pixel1, pixel2,seg_num, BlurFlag,blur_i
 %   Detailed explanation goes here
 % input args is the two frames and the blur flag
 % ooutput args is the moving vector for each small blocks
-
+    %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+    %  parameters
+    %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+    
+    likelyhood_thres = 10; % under thres, the two segments are the same
+                           % used in MAD
+    
+    
     %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
     %for each frame, segment as 20 by 20 small blocks%
     %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -100,23 +107,24 @@ function [res_r,res_c] = HexMovDetector( pixel1, pixel2,seg_num, BlurFlag,blur_i
                         if( i == 1)
                             position.dx = center_pos.r;
                             position.dy = center_pos.c;
-                            diff = MAD(test_seg, pixel_n, position,num);
+                            diff = MAD(test_seg, pixel_n, position,num, likelyhood_thres);
                             v(i) = diff.value;
-                            x(i) = diff.x;
-                            y(i) = diff.y;
                         else
                             j = i-1;
                             position.dx = para_pos(j).r;
                             position.dy = para_pos(j).c;
-                            diff = MAD(test_seg, pixel_n, position,num);
+                            diff = MAD(test_seg, pixel_n, position,num, likelyhood_thres);
                             v(i) = diff.value;
-                            x(i) = diff.x;
-                            y(i) = diff.y;
                         end
                     end
-
-                    tempsubopt = find (v == min(v));
-                    subopt = min(tempsubopt);
+                    
+                    %%% we might have multiple minimum in the values
+                    %%% tempsubopt should be choose as the one closest to
+                    %%% the center, which is 1
+%                     tempsubopt = find (v == min(v));
+%                     subopt = min(tempsubopt);
+                      
+                    subopt = findOptPosHex(v);
 
 %                     subopt = find (v == min(v))
                     if (subopt == 1)
@@ -127,10 +135,13 @@ function [res_r,res_c] = HexMovDetector( pixel1, pixel2,seg_num, BlurFlag,blur_i
 
                         sub_pos(1).r = center_pos.r;
                         sub_pos(1).c = center_pos.c + 1;
+                        
                         sub_pos(2).r = center_pos.r - 1;
                         sub_pos(2).c = center_pos.c;
+                        
                         sub_pos(3).r = center_pos.r;
                         sub_pos(3).c = center_pos.c - 1;
+                        
                         sub_pos(4).r = center_pos.r + 1;
                         sub_pos(4).c = center_pos.c;
 
@@ -138,26 +149,28 @@ function [res_r,res_c] = HexMovDetector( pixel1, pixel2,seg_num, BlurFlag,blur_i
                             if(i == 1)
                                 position.dx = center_pos.r;
                                 position.dy = center_pos.c;
-                                diff = MAD(test_seg, pixel_n, position,num);
+                                diff = MAD(test_seg, pixel_n, position,num, likelyhood_thres);
                                 v(i) = diff.value;
-                                x(i) = diff.x;
-                                y(i) = diff.y; 
+                                x(i) = diff.row;
+                                y(i) = diff.col; 
                             else
                                 j = i-1;
                                 position.dx = sub_pos(j).r;
                                 position.dy = sub_pos(j).c;
-                                diff = MAD(test_seg, pixel_n, position,num);
+                                diff = MAD(test_seg, pixel_n, position,num, likelyhood_thres);
                                 v(i) = diff.value;
-                                x(i) = diff.x;
-                                y(i) = diff.y;
+                                x(i) = diff.row;
+                                y(i) = diff.col;
                             end
                         end
                         %%%% locate the optimal solution %%%%%%%%
                         optflag = 1;
-                        opt_ind = find(v == min(v));
-                        opt_value = min(v);
-                        opt_r = x(opt_ind(1));
-                        opt_c = y(opt_ind(1));
+                        
+                        opt_index = findOptPosHex(v);
+                        %opt_ind = find(v == min(v));
+                        %opt_value = min(v);
+                        opt_r = x(opt_index);
+                        opt_c = y(opt_index);
 
 
                     else

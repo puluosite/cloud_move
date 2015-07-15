@@ -4,7 +4,9 @@ function [ res_r, res_c ] = BrutalMovDetector( pixel1, pixel2, seg_num, BlurFlag
 
     %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
     %%%%%%%% parameters %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-     threshold = 6;
+     %threshold = 6; %% still cannot cancel some noise
+     threshold = 7.5;
+     %threshold = 10;
 
     %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
     %%% pre-check two images %%%%%%%%%%%%%%%
@@ -48,7 +50,7 @@ function [ res_r, res_c ] = BrutalMovDetector( pixel1, pixel2, seg_num, BlurFlag
         end   
     end
     
-    msg = sprintf('Finish loading two images, start computing ... \n')';
+    msg = sprintf('Finish loading two images, start computing ... \n');
     disp(msg);
     msg = sprintf('Num of rows: %d, num of cols: %d, num of segments: %d\n',rows, cols, rows*cols);
     disp(msg);
@@ -59,6 +61,7 @@ function [ res_r, res_c ] = BrutalMovDetector( pixel1, pixel2, seg_num, BlurFlag
     
     for i = 1:rows
         for j = 1:cols
+         
             position.segr = i;
             position.segc = j;
 %             BlockNum = position.segc + (position.segr-1)*num;
@@ -66,7 +69,7 @@ function [ res_r, res_c ] = BrutalMovDetector( pixel1, pixel2, seg_num, BlurFlag
             opt_c = 0;
             
             index = j + (i-1)*cols;
-            disp(index);
+            %disp(index);
             
             
             if(i ~=1 && i~=rows && j ~=1 && j ~= cols)
@@ -120,7 +123,7 @@ function [ res_r, res_c ] = BrutalMovDetector( pixel1, pixel2, seg_num, BlurFlag
                 
                 if (debug_mode)
                     %surf(v)
-                    msg = sprintf('Motion vector is: (%d, %d)',opt_r, opt_c);
+                    msg = sprintf('Row: %d, Col: %d: Motion vector is: (%d, %d)',i, j, opt_r, opt_c);
                     disp(msg);
                     test = 1;
                     org_r = (i-1)*num + 1;

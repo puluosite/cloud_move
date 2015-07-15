@@ -5,11 +5,20 @@ function [ diff ] = MAD( seg, pixel_n, position, num, threshold)
 % position.segc
 % position.dx
 % position.dy
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%% THRESHOLD!!! for noise cancelling %%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 % threshold, if the difference is too small, we take the two segment as the
 % same. Here, the pixel range is 0-255, if we use the msqr, the maximum
 % difference is 255^2 = 65025; and we normalized error, 
 % the seg_size has nothing to do with the threshol
 % therefore, we can set 0.01% error, thershold = 6, try it...;
+% seems that threshold = 6 still have much noise, try threshold = 7.5;
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+
+
+
 orig_row = (position.segr-1)*num+1;
 orig_col = (position.segc-1)*num+1;
 
