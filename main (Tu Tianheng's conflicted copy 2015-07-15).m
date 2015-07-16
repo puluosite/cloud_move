@@ -2,6 +2,41 @@ clc;
 clear;
 close all;
 
+debug_mode = true;
+
+%%%%% video process%%%%%%%%%%%
+% info=aviinfo('test.avi');
+% width = info.Width;
+% height = info.Height;
+% nframes = info.NumFrames;
+% 
+% IM=uint8(zeros(height,width,3,nframes));
+% 
+% 
+% video = aviread('test.avi');
+% 
+% for i=1:nframes
+%     IM(:,:,:,i)=video(i).cdata;
+% end
+% 
+% clear avi;
+% 
+% for f = 1:nframes
+%     pixel(:,:,f) = (rgb2gray(IM(:,:,:,f)));  
+% end
+% 
+% blur_flag = true;
+% blur_index = 5;
+% seg_num = 20;
+% [res_r, res_c] = BrutalMovDetector(pixel(:,:,1),pixel(:,:,7),seg_num,false,blur_index);
+% [a, b] = HexMovDetector(pixel(:,:,1),pixel(:,:,7),seg_num,blur_flag,blur_index);
+% % res_r - a
+% 
+% figure(1)
+% ImagePlot(pixel(:,:,1),seg_num,a,b);
+% figure(2)
+% ImagePlot(pixel(:,:,1),seg_num,res_r,res_c);
+
 
 
 %%%%%%% picture process%%%%%%%%%%%
@@ -45,12 +80,10 @@ ImagePlotSuper(p1, p2,40,v1,v2);
 seg_num = 40;
 blur_index = 6;
 blur_flag = false;
-debug_mode = true;
 likelyhood_thres = 10;
 
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-%%%%%% Algorithm1. Brutal Force %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%% brutal force
+
 %{
 disp('brutal')
 tic
@@ -74,38 +107,14 @@ save('gt_data.mat','gt_data');
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %{
 blur_flag = true;
-[e,f] = BrutalMovDetector(p1,p2,seg_num,blur_flag,blur_index, debug_mode, likelyhood_thres);
+[e,f] = BrutalMovDetector(p1,p2,seg_num,blur_flag,blur_index, debug_mode);
 figure(4)
 ImagePlotSuper(p1, p2,seg_num,e,f);
 %}
 
 
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-%%%%%% Algorithm2. Hex Based Algorithm %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-gt = load('gt_data.mat');
-gt_r = gt.gt_data.gt_r;
-gt_c = gt.gt_data.gt_c;
-figure;
-ImagePlot(p1,seg_num,gt_r,gt_c);
 
-disp('Normal HEXBS')
-[hex_r, hex_c] = HexMovDetector(p1,p2,seg_num,blur_flag,blur_index,likelyhood_thres);
-figure;
-ImagePlot(p1,seg_num,hex_r,hex_c);
-
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-%%%%  Error between GT and hexbs
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-
-error_analysis
-
-
-
-
-
-
-
+%{
 pixel(:,:,1) = p1;
 pixel(:,:,2) = p2;
 energy = [];
@@ -138,10 +147,18 @@ for i = 1:rows
         end
     end
 end
+%}
 
 
+gt = load('gt_data.mat');
+gt_r = gt.gt_data.gt_r;
+gt_c = gt.gt_data.gt_c;
+ImagePlot(p1,seg_num,gt_r,gt_c);
 
-
+disp('Normal HEXBS')
+[hex_x, hex_y] = HexMovDetector(p1,p2,seg_num,blur_flag,blur_index);
+figure(4)
+ImagePlot(p1,seg_num,hex_x,hex_y);
 
 disp('SA')
 %[hexsa_x, hexsa_y] = HexMovDetectorSA(p1,p2,seg_num,false,blur_index);

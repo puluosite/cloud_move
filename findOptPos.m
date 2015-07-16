@@ -32,14 +32,16 @@ for i = 1: num_opt_pair
     this_m = cx(i);
     this_n = cy(i);
     %%% using Manhatten dist to save computation %%
-    temp_dist = abs(this_m - center_m) + abs(this_n - center_n);
+    %%% using sqrt instead, might confuse since 4,0 and 3,1 have the same
+    %%% dist in Manhatten
+    temp_dist = sqrt(abs(this_m - center_m)^2 + abs(this_n - center_n)^2);
     dist(i) = temp_dist;
 end
 
 %%%%% find the minimum of disp %%%%%%%%
 opt_pos = find(dist == min(dist));
-opt_x = cx(opt_pos);
-opt_y = cy(opt_pos);
+opt_x = cx(opt_pos(1));
+opt_y = cy(opt_pos(1));
 
 
 
